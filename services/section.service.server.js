@@ -10,16 +10,16 @@ module.exports = function (app) {
 
     function findSectionsForStudent(req, res) {
         var currentUser = req.session.currentUser;
-        if(currentUser !== undefined) {
-            var studentId = currentUser._id;
+        var studentId = currentUser._id;
+        if (currentUser !== undefined) {
             enrollmentModel
                 .findSectionsForStudent(studentId)
                 .then(function (enrollments) {
-                    res.json(enrollments);
+                    res.json(enrollments)
                 });
         }
-        res.sendStatus(404);
     }
+
 
     function enrollStudentInSection(req, res) {
         var sectionId = req.params.sectionId;
@@ -62,4 +62,5 @@ module.exports = function (app) {
                 res.json(section);
             })
     }
-};
+}
+;

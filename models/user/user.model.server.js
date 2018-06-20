@@ -34,8 +34,12 @@ function findAllUsers() {
     return userModel.find();
 }
 
-function findUserByUsername(username) {
+function validateUsername(username) {
     return userModel.find({username: username}).count();
+}
+
+function findUserByUsername(username) {
+    return userModel.find({username: username});
 }
 
 var api = {
@@ -43,8 +47,9 @@ var api = {
     findAllUsers: findAllUsers,
     findUserById: findUserById,
     findUserByCredentials: findUserByCredentials,
-    findUserByUsername: findUserByUsername,
-    updateUser: updateUser
+    validateUsername: validateUsername,
+    updateUser: updateUser,
+    findUserByUsername: findUserByUsername
 };
 
 module.exports = api;

@@ -6,7 +6,7 @@ module.exports = function (app) {
     app.post('/api/logout', logout);
     app.post('/api/login', login);
     app.put('/api/user/update', update);
-    app.get('/api/user/auth', authenticate);
+    app.get('/api/auth', authenticate);
 
     var userModel = require('../models/user/user.model.server');
 
@@ -61,12 +61,16 @@ module.exports = function (app) {
     }
 
     function profile(req, res) {
-        res.send(req.session['currentUser']);
+        let user = req.session['currentUser'];
+        userModel.findUserByUsername(user.username)
+            .then(dbuser => {
+                res.json(dbuser);
+            })
     }
 
     function createUser(req, res) {
         var user = req.body;
-        userModel.findUserByUsername(user.username)
+        userModel.validateUsername(user.username)
             .then(function (response) {
                 if (response === 0) {
                     userModel.createUser(user)
