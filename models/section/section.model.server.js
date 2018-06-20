@@ -3,32 +3,52 @@ var sectionSchema = require('./section.schema.server');
 var sectionModel = mongoose.model('SectionModel', sectionSchema);
 
 function createSection(section) {
-  return sectionModel.create(section);
+    return sectionModel.create(section);
 }
 
 function findSectionsForCourse(courseId) {
-  return sectionModel.find({courseId: courseId});
+    return sectionModel.find({courseId: courseId});
 }
 
 function decrementSectionSeats(sectionId) {
-  return sectionModel.update({
-    _id: sectionId
-  }, {
-    $inc: {seats: -1}
-  });
+    return sectionModel.update({
+        _id: sectionId
+    }, {
+        $inc: {seats: -1}
+    });
 }
 
 function incrementSectionSeats(sectionId) {
-  return sectionModel.update({
-    _id: sectionId
-  }, {
-    $inc: {seats: +1}
-  });
+    return sectionModel.update({
+        _id: sectionId
+    }, {
+        $inc: {seats: +1}
+    });
+}
+
+function findSectionById(sectionId) {
+    return sectionModel.findById(sectionId);
+}
+
+function updateSection(newSection, sectionId) {
+    return sectionModel.updateOne({
+        _id: sectionId
+    }, {
+        $set:
+            {
+                courseId: newSection.courseId,
+                name: newSection.name,
+                seats: newSection.seats,
+                availableSeats: newSection.availableSeats
+            }
+    })
 }
 
 module.exports = {
-  createSection: createSection,
-  findSectionsForCourse: findSectionsForCourse,
-  decrementSectionSeats: decrementSectionSeats,
-  incrementSectionSeats: incrementSectionSeats
+    createSection: createSection,
+    updateSection: updateSection,
+    findSectionsForCourse: findSectionsForCourse,
+    decrementSectionSeats: decrementSectionSeats,
+    incrementSectionSeats: incrementSectionSeats,
+    findSectionById: findSectionById
 };
