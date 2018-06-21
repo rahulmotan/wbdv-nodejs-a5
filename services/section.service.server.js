@@ -5,9 +5,43 @@ module.exports = function (app) {
     app.post('/api/section/:sectionId/enrollment', enrollStudentInSection);
     app.get('/api/student/section', findSectionsForStudent);
     app.put('/api/course/:courseId/section/:sectionId/update', updateSection);
+    app.delete('/api/section/:sectionId/delete', deleteSection);
+    app.delete('/api/section/:sectionId/deregister', deregisterStudentInSection);
 
     var sectionModel = require('../models/section/section.model.server');
     var enrollmentModel = require('../models/enrollment/enrollment.model.server');
+
+    function deleteSection(req, res) {
+        var sectionId = req.params.sectionId;
+        var currentUser = req.session.currentUser;
+        var studentId = currentUser._id;
+        enrollmentModel.deleteEnrollment(sectionId, studentId)
+            .then(function () {
+                sectionModel.deleteSection(sectionId).then(
+                    function (obj) {
+                        res.sendStatus(200);
+                    })
+            })
+    }
+
+    function deregisterStudentInSection(req, res) {
+        var sectionId = req.params['sectionId'];
+        var currentUser = req.session.currentUser;
+        if (currentUser !== undefined) {
+            var studentId = currentUser._id;
+            sectionModel.incrementSectionSeats(sectionId)
+                .then(function () {
+                    return enrollmentModel.deleteEnrollment(sectionId, studentId)
+                        .then(function (obj) {
+                            if (obj.n > 0) {
+                                res.sendStatus(200);
+                            }
+                        })
+                })
+        } else {
+            res.sendStatus(500);
+        }
+    }
 
     function updateSection(req, res) {
         var newSection = req.body;
